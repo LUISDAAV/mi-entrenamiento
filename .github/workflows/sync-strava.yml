@@ -40,13 +40,13 @@ jobs:
         run: |
           curl -s -H "Authorization: Bearer ${{ steps.token.outputs.access_token }}" \
             "https://www.strava.com/api/v3/athlete/activities?per_page=60" \
-            -o app/activities.json
+            -o ./activities.json
 
       - name: Fetch athlete profile
         run: |
           curl -s -H "Authorization: Bearer ${{ steps.token.outputs.access_token }}" \
             "https://www.strava.com/api/v3/athlete" \
-            -o app/athlete.json
+            -o ./athlete.json
 
       - name: Add metadata
         run: |
@@ -56,7 +56,7 @@ jobs:
             'last_sync': datetime.datetime.utcnow().isoformat() + 'Z',
             'generated_by': 'GitHub Actions'
           }
-          with open('app/meta.json', 'w') as f:
+          with open('meta.json', 'w') as f:
             json.dump(meta, f)
           "
 
@@ -64,6 +64,6 @@ jobs:
         run: |
           git config user.name "Strava Sync Bot"
           git config user.email "bot@github.com"
-          git add app/activities.json app/athlete.json app/meta.json
+          git add activities.json athlete.json meta.json
           git diff --staged --quiet || git commit -m "sync: Strava data $(date +'%Y-%m-%d')"
           git push
